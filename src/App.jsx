@@ -33,17 +33,19 @@ function Nav() {
 
   const links = []
   if (user) {
-    links.push(['Dasbor', profile?.role === 'admin' ? '/admin' : '/dashboard'])
-    if (profile?.role === 'member') {
-      links.push(['Ajukan Pinjaman', '/apply'])
-      links.push(['Profil', '/profil'])
-    }
     if (profile?.role === 'admin') {
+      // Tanpa entri "Dasbor" terpisah: Verifikasi adalah dasbor admin
+      // (duplikat tujuan /admin memicu warning key React).
       links.push(['Verifikasi', '/admin'])
       links.push(['Anggota', '/admin/anggota'])
-    }
-    if (profile?.role === 'member' || profile?.role === 'admin') {
       links.push(['Chat AI', '/chat'])
+    } else {
+      links.push(['Dasbor', '/dashboard'])
+      if (profile?.role === 'member') {
+        links.push(['Ajukan Pinjaman', '/apply'])
+        links.push(['Profil', '/profil'])
+        links.push(['Chat AI', '/chat'])
+      }
     }
   }
 
@@ -55,7 +57,7 @@ function Nav() {
           <span className="flex-1" />
           <nav className="hidden sm:flex items-center gap-1 text-sm">
             {links.map(([label, to]) => (
-              <Link key={to} to={to} className="rounded-lg px-3 py-2 font-medium text-slate-700 hover:bg-slate-100">{label}</Link>
+              <Link key={`${label}:${to}`} to={to} className="rounded-lg px-3 py-2 font-medium text-slate-700 hover:bg-slate-100">{label}</Link>
             ))}
             {user ? (
               <button onClick={keluar} className="btn-outline !min-h-0 !py-2 ml-2">Keluar{profile?.role ? ` (${profile.role})` : ''}</button>
@@ -71,7 +73,7 @@ function Nav() {
       {open && (
         <nav className="sm:hidden border-t border-slate-200 bg-white px-4 py-2 space-y-1 text-[15px]">
           {links.map(([label, to]) => (
-            <Link key={to} to={to} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 font-medium hover:bg-slate-100">{label}</Link>
+            <Link key={`${label}:${to}`} to={to} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 font-medium hover:bg-slate-100">{label}</Link>
           ))}
           {user ? (
             <button onClick={keluar} className="block w-full text-left rounded-lg px-3 py-2.5 font-medium text-red-600 hover:bg-red-50">Keluar</button>
