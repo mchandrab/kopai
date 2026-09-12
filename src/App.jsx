@@ -33,15 +33,17 @@ function Nav() {
 
   const links = []
   if (user) {
-    links.push(['Dasbor', '/dashboard'])
+    links.push(['Dasbor', profile?.role === 'admin' ? '/admin' : '/dashboard'])
     if (profile?.role === 'member') {
       links.push(['Ajukan Pinjaman', '/apply'])
-      links.push(['Chat AI', '/chat'])
       links.push(['Profil', '/profil'])
     }
     if (profile?.role === 'admin') {
       links.push(['Verifikasi', '/admin'])
       links.push(['Anggota', '/admin/anggota'])
+    }
+    if (profile?.role === 'member' || profile?.role === 'admin') {
+      links.push(['Chat AI', '/chat'])
     }
   }
 
@@ -93,7 +95,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<ProtectedRoute allow={['member', 'admin']}><MemberDashboard /></ProtectedRoute>} />
             <Route path="/apply" element={<ProtectedRoute allow={['member']}><ApplyLoan /></ProtectedRoute>} />
-            <Route path="/chat" element={<ProtectedRoute allow={['member']}><ChatAssistant /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute allow={['member', 'admin']}><ChatAssistant /></ProtectedRoute>} />
             <Route path="/profil" element={<ProtectedRoute allow={['member', 'admin']}><Profile /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute allow={['admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/anggota" element={<ProtectedRoute allow={['admin']}><AdminMembers /></ProtectedRoute>} />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { Card, PageHeader, Stat, StatusBadge, RiskBadge, EmptyState, Loading, rupiah } from '../components/ui.jsx'
@@ -13,6 +13,9 @@ export default function MemberDashboard() {
     supabase.from('loan_applications').select('*').eq('member_id', user.id)
       .order('created_at', { ascending: false }).then(({ data }) => setLoans(data ?? []))
   }, [user])
+
+  // Pengurus punya dasbor sendiri — jangan tampilkan dasbor member + tombol yang memantul.
+  if (profile?.role === 'admin') return <Navigate to="/admin" replace />
 
   if (loans === null) return <Loading />
 
