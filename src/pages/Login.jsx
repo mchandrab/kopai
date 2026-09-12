@@ -1,15 +1,18 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { Card } from '../components/ui.jsx'
 
 export default function Login() {
-  const { signIn, signUp } = useAuth()
+  const { user, signIn, signUp } = useAuth()
   const nav = useNavigate()
   const [mode, setMode] = useState('signin')
   const [form, setForm] = useState({ email: '', password: '', name: '' })
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
+
+  // Sudah masuk? Jangan tampilkan form lagi.
+  if (user) return <Navigate to="/dashboard" replace />
 
   async function submit(e) {
     e.preventDefault()

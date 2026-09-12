@@ -125,6 +125,11 @@ create table if not exists public.role_audit_log (
   changed_at timestamp with time zone default now() not null
 );
 
+-- Skor otoritatif server (paritas dengan src/lib/scoring.js, teruji 8/8):
+-- trigger BEFORE INSERT menghitung ulang ai_credit_score + ai_risk_level
+-- dari profil dan menimpa kiriman klien — member tak bisa POST skor palsu.
+-- ai_recommendation_notes tetap milik klien (pengayaan Gemini).
+
 -- loan_applications: member insert+select milik sendiri; admin select semua + update keputusan
 create policy loans_select on public.loan_applications for select using (member_id = auth.uid() or public.is_admin());
 create policy loans_insert_member on public.loan_applications for insert with check (member_id = auth.uid());
