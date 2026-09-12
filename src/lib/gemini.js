@@ -10,7 +10,8 @@ export function isGeminiConfigured() {
 export async function chatReply({ history = [], userMessage, context = '' }) {
   if (!apiKey) throw new Error('VITE_GEMINI_API_KEY belum diset.')
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  // Alias stabil (terverifikasi live 2026-09-12); model pin seperti 1.5/2.5-flash 404 untuk kunci ini.
+  const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' })
   const system = [
     'Kamu asisten keuangan koperasi KopAI (Bahasa Indonesia).',
     'Beri saran praktis soal cicilan, simpanan, dan usaha kecil.',
@@ -32,7 +33,7 @@ export async function enrichNotes(baseNotes, { score, risk }) {
   if (!apiKey) return baseNotes
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' })
     const prompt = `Tulis ulang 2-3 kalimat rekomendasi kredit koperasi (skor ${score}, risiko ${risk}). Basis: "${baseNotes}". Bahasa Indonesia, nada pengurus koperasi.`
     const result = await model.generateContent(prompt)
     return result.response.text()
