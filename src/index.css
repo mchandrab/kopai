@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-slate-100 p-4 sm:p-5;
+  }
+  .field {
+    @apply w-full border border-slate-300 rounded-xl px-3 py-2.5 text-base bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500;
+    min-height: 44px;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 font-semibold text-sm transition active:scale-[0.98] disabled:opacity-50;
+    min-height: 44px;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .btn-outline {
+    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .badge-low {
+    @apply badge bg-green-100 text-green-800;
+  }
+  .badge-medium {
+    @apply badge bg-amber-100 text-amber-800;
+  }
+  .badge-high {
+    @apply badge bg-red-100 text-red-800;
+  }
+  .badge-pending {
+    @apply badge bg-slate-200 text-slate-700;
+  }
+  .badge-approved {
+    @apply badge bg-green-100 text-green-800;
+  }
+  .badge-rejected {
+    @apply badge bg-red-100 text-red-800;
+  }
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1;
+  }
+  .muted {
+    @apply text-sm text-slate-500;
+  }
+}
