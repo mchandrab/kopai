@@ -26,6 +26,12 @@ export default function MemberDashboard() {
         subtitle="Kelola simpanan, pinjaman, dan kesehatan keuangan Anda."
         action={<Link to="/chat" className="btn-outline">💬 Chat AI</Link>}
       />
+      {!profile?.business_type && (
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-sm flex-1"><b>Profil belum lengkap.</b> Isi jenis usaha agar skor pinjaman akurat.</p>
+          <Link to="/profil" className="btn-primary !min-h-0 !py-2">Lengkapi</Link>
+        </div>
+      )}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
         <Stat label="Total Simpanan" value={rupiah(profile?.total_savings)} sub={`Anggota sejak ${profile?.join_date ? new Date(profile.join_date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) : '-'}`} />
         <Stat label="Menunggu Verifikasi" value={pending} sub="pengajuan" />

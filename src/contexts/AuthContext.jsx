@@ -71,8 +71,13 @@ export function AuthProvider({ children }) {
     setProfile(null)
   }
 
+  async function refreshProfile() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user) await loadProfile(session.user.id)
+  }
+
   return (
-    <AuthCtx.Provider value={{ user, profile, loading, signUp, signIn, signOut }}>
+    <AuthCtx.Provider value={{ user, profile, loading, signUp, signIn, signOut, refreshProfile }}>
       {children}
     </AuthCtx.Provider>
   )

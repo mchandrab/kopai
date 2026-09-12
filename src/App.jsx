@@ -6,7 +6,9 @@ import Landing from './pages/Landing.jsx'
 import Login from './pages/Login.jsx'
 import ApplyLoan from './pages/ApplyLoan.jsx'
 import MemberDashboard from './pages/MemberDashboard.jsx'
+import Profile from './pages/Profile.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
+import AdminMembers from './pages/AdminMembers.jsx'
 import ChatAssistant from './pages/ChatAssistant.jsx'
 
 function Logo() {
@@ -35,8 +37,12 @@ function Nav() {
     if (profile?.role === 'member') {
       links.push(['Ajukan Pinjaman', '/apply'])
       links.push(['Chat AI', '/chat'])
+      links.push(['Profil', '/profil'])
     }
-    if (profile?.role === 'admin') links.push(['Verifikasi', '/admin'])
+    if (profile?.role === 'admin') {
+      links.push(['Verifikasi', '/admin'])
+      links.push(['Anggota', '/admin/anggota'])
+    }
   }
 
   return (
@@ -88,7 +94,9 @@ export default function App() {
             <Route path="/dashboard" element={<ProtectedRoute allow={['member', 'admin']}><MemberDashboard /></ProtectedRoute>} />
             <Route path="/apply" element={<ProtectedRoute allow={['member']}><ApplyLoan /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute allow={['member']}><ChatAssistant /></ProtectedRoute>} />
+            <Route path="/profil" element={<ProtectedRoute allow={['member', 'admin']}><Profile /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute allow={['admin']}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/anggota" element={<ProtectedRoute allow={['admin']}><AdminMembers /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

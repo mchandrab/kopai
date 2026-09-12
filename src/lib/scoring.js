@@ -29,6 +29,7 @@ const BUSINESS_MAP = {
   petani: 60,
   buruh: 60,
   baru: 50,
+  lainnya: 60,
 }
 
 export function businessScore(businessType) {
