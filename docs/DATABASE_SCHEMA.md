@@ -76,6 +76,26 @@ create policy profiles_update_own on public.profiles for update
 create policy profiles_update_admin on public.profiles for update
   using (public.is_admin()) with check (public.is_admin());
 
+-- Proteksi kolom: total_savings hanya boleh diubah pengurus/backend.
+-- Trigger menolak update simpanan oleh non-admin (anggota tetap bisa
+-- update nama/business_type miliknya sendiri).
+create or replace function public.forbid_member_savings_change()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then
+    return new;
+  end if;
+  if new.total_savings is distinct from old.total_savings and not public.is_admin() then
+    raise exception 'Hanya pengurus yang dapat mengubah simpanan anggota';
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists trg_forbid_member_savings_change on public.profiles;
+create trigger trg_forbid_member_savings_change
+  before update on public.profiles
+  for each row execute function public.forbid_member_savings_change();
+
 -- loan_applications: member insert+select milik sendiri; admin select semua + update keputusan
 create policy loans_select on public.loan_applications for select using (member_id = auth.uid() or public.is_admin());
 create policy loans_insert_member on public.loan_applications for insert with check (member_id = auth.uid());
