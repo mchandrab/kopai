@@ -7,6 +7,25 @@ export function isGeminiConfigured() {
   return Boolean(apiKey)
 }
 
+export function isBusyError(e) {
+  return /503|429|overloaded|Service Unavailable|quota|rate/i.test(e?.message || '')
+}
+
+// Free tier sering 503 sesaat: coba ulang 3x dengan jeda bertambah sebelum menyerah.
+async function withRetry(fn, tries = 3) {
+  let last
+  for (let i = 0; i < tries; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      last = e
+      if (!isBusyError(e) || i === tries - 1) throw e
+      await new Promise((r) => setTimeout(r, 2000 * (i + 1)))
+    }
+  }
+  throw last
+}
+
 export async function chatReply({ history = [], userMessage, context = '' }) {
   if (!apiKey) throw new Error('VITE_GEMINI_API_KEY belum diset.')
   const genAI = new GoogleGenerativeAI(apiKey)
@@ -25,7 +44,7 @@ export async function chatReply({ history = [], userMessage, context = '' }) {
       ...history,
     ],
   })
-  const result = await chat.sendMessage(userMessage)
+  const result = await withRetry(() => chat.sendMessage(userMessage))
   return result.response.text()
 }
 
@@ -35,7 +54,7 @@ export async function enrichNotes(baseNotes, { score, risk }) {
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' })
     const prompt = `Tulis ulang 2-3 kalimat rekomendasi kredit koperasi (skor ${score}, risiko ${risk}). Basis: "${baseNotes}". Bahasa Indonesia, nada pengurus koperasi.`
-    const result = await model.generateContent(prompt)
+    const result = await withRetry(() => model.generateContent(prompt))
     return result.response.text()
   } catch {
     return baseNotes // free-tier limit/error -> fallback ke formula lokal

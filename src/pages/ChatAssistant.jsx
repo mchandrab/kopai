@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
-import { chatReply, isGeminiConfigured } from '../lib/gemini.js'
+import { chatReply, isGeminiConfigured, isBusyError } from '../lib/gemini.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { PageHeader, rupiah } from '../components/ui.jsx'
 
@@ -39,8 +39,10 @@ export default function ChatAssistant() {
       let reply
       try {
         reply = await chatReply({ history, userMessage: clean, context })
-      } catch {
-        reply = 'Mode offline: kunci Gemini belum dipasang. Tips umum — sisihkan 20% pemasukan untuk cicilan, catat setiap pemasukan dan pengeluaran harian, dan dahulukan kebutuhan usaha produktif.'
+      } catch (e) {
+        reply = isBusyError(e)
+          ? 'Server AI sedang sibuk (sudah dicoba 3x). Silakan kirim ulang pertanyaan Anda sebentar lagi. Sementara itu, tips umum: sisihkan 20% pemasukan untuk cicilan dan catat arus kas harian.'
+          : 'Mode offline: kunci Gemini belum dipasang. Tips umum — sisihkan 20% pemasukan untuk cicilan, catat setiap pemasukan dan pengeluaran harian, dan dahulukan kebutuhan usaha produktif.'
       }
       await supabase.from('ai_chat_history').insert({ member_id: user.id, sender: 'ai', message: reply })
       setMsgs((m) => [...(m ?? []), { sender: 'ai', message: reply }])
