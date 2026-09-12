@@ -96,6 +96,35 @@ create trigger trg_forbid_member_savings_change
   before update on public.profiles
   for each row execute function public.forbid_member_savings_change();
 
+-- Bootstrap admin tunggal: email admin yang (ter)daftar otomatis role admin,
+-- sehingga hapus-daftar tak sengaja sembuh sendiri. Manajemen multi-admin
+-- masuk backlog (UI kelola admin).
+create or replace function public.auto_admin_on_signup()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  admin_id uuid;
+begin
+  select id into admin_id from auth.users where email = 'muhammadchandrab@gmail.com';
+  if admin_id is not null and new.id = admin_id then
+    new.role := 'admin';
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists trg_auto_admin_on_signup on public.profiles;
+create trigger trg_auto_admin_on_signup
+  before insert on public.profiles
+  for each row execute function public.auto_admin_on_signup();
+
+-- Audit perubahan role (hanya Table Editor; tanpa akses API).
+create table if not exists public.role_audit_log (
+  id bigint generated always as identity primary key,
+  profile_id uuid not null,
+  old_role text,
+  new_role text,
+  changed_at timestamp with time zone default now() not null
+);
+
 -- loan_applications: member insert+select milik sendiri; admin select semua + update keputusan
 create policy loans_select on public.loan_applications for select using (member_id = auth.uid() or public.is_admin());
 create policy loans_insert_member on public.loan_applications for insert with check (member_id = auth.uid());

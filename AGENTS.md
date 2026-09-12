@@ -16,6 +16,7 @@
 - Tables/columns/enums in `docs/DATABASE_SCHEMA.md` are canonical: `profiles(id→auth.users, role member|admin)`, `loan_applications(status pending|approved|rejected, ai_credit_score 0–100, ai_risk_level Low|Medium|High)`, `ai_chat_history(sender user|ai)`.
 - Any new table or enum change must update `docs/DATABASE_SCHEMA.md` first.
 - Supabase RLS is mandatory (members see only own rows; admins see queue). Never ship without RLS policies; never expose `service_role` key to the client.
+- NEVER delete users from Supabase Authentication dashboard: FK cascade wipes their profile + loans + chats. Bootstrap admin email is `muhammadchandrab@gmail.com` (auto-admin trigger `trg_auto_admin_on_signup` re-heals it on re-signup). For account resets, write a cleanup migration instead.
 
 ## AI / scoring constraints
 - Credit score output contract: `ai_credit_score` int 0–100 + `ai_risk_level` Low/Medium/High + `ai_recommendation_notes` text, written to `loan_applications` at submit time (see `docs/WORKFLOW.md`).
